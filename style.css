@@ -1,0 +1,208 @@
+:root {
+  --page: #efdcff;
+  --body-top: #4a1a86;
+  --body-bottom: #2a0f52;
+  --screen: #1d0b33;
+  --screen-text: #ffd9ee;
+  --screen-dim: #c39be8;
+  --pink: #ff5fa8;
+  --violet: #b06cff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: var(--page);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.calc {
+  width: min(92vw, 340px);
+  padding: 18px;
+  background:
+    radial-gradient(circle at 15% 80%, rgba(255, 95, 168, 0.4), transparent 45%),
+    radial-gradient(circle at 85% 55%, rgba(176, 108, 255, 0.4), transparent 45%),
+    linear-gradient(160deg, var(--body-top), var(--body-bottom));
+  border-radius: 28px;
+  box-shadow: 0 20px 45px rgba(74, 26, 134, 0.4);
+}
+
+/* ---------- Screen ---------- */
+.screen {
+  position: relative;
+  background: var(--screen);
+  border-radius: 16px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  text-align: right;
+  min-height: 104px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
+.history { color: var(--screen-dim); min-height: 1.4rem; }
+
+.current {
+  color: var(--screen-text);
+  font-size: 2.6rem;
+  font-weight: 600;
+  word-break: break-all;
+  transition: opacity 0.3s;
+}
+.current.hidden { opacity: 0; }
+
+/* ---------- Scanning wave ---------- */
+.screen::before,
+.screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.screen::before {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='40' viewBox='0 0 60 40'%3E%3Cpath d='M0 20 Q15 0 30 20 T60 20' fill='none' stroke='%23ff5fa8' stroke-width='3'/%3E%3C/svg%3E")
+    repeat-x center;
+}
+
+.screen::after {
+  width: 45%;
+  background: linear-gradient(90deg, transparent, rgba(255, 95, 168, 0.55), rgba(176, 108, 255, 0.55), transparent);
+  filter: blur(6px);
+}
+
+.screen.scanning::before {
+  opacity: 1;
+  animation: ripple 0.5s linear infinite;
+}
+.screen.scanning::after {
+  opacity: 1;
+  animation: sweep 1.5s ease-in-out;
+}
+
+@keyframes ripple { to { background-position-x: 60px; } }
+@keyframes sweep {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(230%); }
+}
+
+/* ---------- "Analyzing" text ---------- */
+.analyzing {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12px;
+  text-align: center;
+  z-index: 1;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  color: var(--pink);
+  text-shadow: 0 0 10px rgba(255, 95, 168, 0.8);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.screen.scanning .analyzing { opacity: 1; }
+
+.analyzing span { opacity: 0.2; }
+.screen.scanning .analyzing span { animation: blink 0.9s infinite; }
+.analyzing span:nth-child(2) { animation-delay: 0.15s; }
+.analyzing span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes blink {
+  0%, 100% { opacity: 0.2; }
+  50%      { opacity: 1; }
+}
+
+/* ---------- Clear glass bubble keys ---------- */
+.keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+button {
+  --c: 122 70 210;               /* base color as R G B numbers */
+  position: relative;
+  font: inherit;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  padding: 0;
+
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1.5px solid rgb(255 255 255 / 0.35);
+
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgb(var(--c) / 0.08) 0%,
+    rgb(var(--c) / 0.22) 60%,
+    rgb(var(--c) / 0.55) 100%
+  );
+
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+
+  box-shadow:
+    inset 0 0 14px rgb(255 255 255 / 0.25),
+    inset -5px -7px 12px rgb(var(--c) / 0.6),
+    inset 5px 6px 10px rgb(255 255 255 / 0.18),
+    0 8px 16px rgb(10 0 30 / 0.45),
+    0 0 14px rgb(var(--c) / 0.35);
+
+  text-shadow: 0 1px 4px rgb(0 0 0 / 0.4);
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+
+/* Big shine, top-left */
+button::before {
+  content: "";
+  position: absolute;
+  top: 9%;
+  left: 16%;
+  width: 38%;
+  height: 22%;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.85), rgb(255 255 255 / 0.05));
+  transform: rotate(-28deg);
+  pointer-events: none;
+}
+
+/* Small reflection, bottom-right */
+button::after {
+  content: "";
+  position: absolute;
+  right: 14%;
+  bottom: 12%;
+  width: 18%;
+  height: 10%;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.35);
+  filter: blur(1px);
+  transform: rotate(-28deg);
+  pointer-events: none;
+}
+
+button:hover { transform: translateY(-2px); }
+button:active { transform: scale(0.92); }
+button:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+/* Each key type only changes its base color */
+.fn     { --c: 150 105 220; }
+.op     { --c: 255 95 168; }
+.equals { --c: 176 108 255; }
+
+.zero {
+  grid-column: span 2;
+  aspect-ratio: auto;
+  border-radius: 999px;
+}
